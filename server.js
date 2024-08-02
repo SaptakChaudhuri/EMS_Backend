@@ -72,11 +72,13 @@ app.post('/generate-questions', async (req, res) => {
         const response = result.response;
         const text = await response.text();
         
-        // Clean the response text if needed (e.g., remove code fences)
-        const cleanedText = text.replace(/```json|```/g, '').trim();
+        // Extract JSON-like content from the response
+        const jsonStart = text.indexOf('[');
+        const jsonEnd = text.lastIndexOf(']') + 1;
+        const jsonString = text.substring(jsonStart, jsonEnd);
 
         // Parse the cleaned content
-        const questions = JSON.parse(cleanedText);
+        const questions = JSON.parse(jsonString);
 
         res.json({ questions, timing });
     } catch (error) {
